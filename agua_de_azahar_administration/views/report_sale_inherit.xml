@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+        <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//div[@class='page']" position="inside">
+                <t t-if="is_pro_forma">
+                    <div class="footer text-center" style="bottom: 5px; width: 100%;">
+                        <hr style="border: 1px solid black;"/>
+                        <span>+34 954 23 30 58</span>
+                        <br/>
+                        <span>aguadeazahar@aguadeazahar.com</span>
+                        <br/>
+                        <span>Numero de cuenta: ES10 0049 5854 3622 1600 8003 Banco Santander</span>
+                        <div class="text-muted">
+                            Page:
+                            <span class="page"/>
+                            /
+                            <span class="topage"/>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

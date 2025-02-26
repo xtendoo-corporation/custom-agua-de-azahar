@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+        <template id="report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='mt-5 clearfix']" position="after">
+                <t t-if="proforma">
+                    <div class="footer text-center" style="position: absolute; bottom: 5px; width: 100%;">
+                        <span>Numero de cuenta: ES10 0049 5854 3622 1600 8003 Banco Santander</span>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
