@@ -14,6 +14,8 @@
     "data": [
         "views/report_invoice_inherit.xml",
         "views/report_sale_inherit.xml",
+        "views/report_templates.xml",
+        "views/report_delivery_document.xml",
     ],
     "installable": True,
     "application": False,
