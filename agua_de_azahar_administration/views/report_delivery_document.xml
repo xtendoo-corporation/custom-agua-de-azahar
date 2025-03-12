@@ -3,8 +3,12 @@
         <xpath expr="//h2" position="replace">
             <h2>
                 <span>Albarán</span>
-                <t t-if = "o.origin">
-                 <span t-field="o.origin">S0001</span>
+                <t t-if="o.origin">
+                    <span t-field="o.origin">S0001</span>
+                </t>
+                <t t-else="">
+                    <span>Albarán</span>
+                    <span t-field="o.name">WH/OUT/0001</span>
                 </t>
             </h2>
         </xpath>
