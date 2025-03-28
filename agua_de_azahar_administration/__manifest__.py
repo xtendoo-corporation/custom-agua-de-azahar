@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "author": "Abraham (Xtendoo)",
     "license": "AGPL-3",
-    "website": "",
+    "website": "xtendoo.es",
     "category": "Administration",
     "depends": ["account",
                 "sale",

@@ -1,0 +1,13 @@
+<odoo>
+    <template id="report_invoice_document_inherit_bank_acc" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[contains(@class, 'page')]/div[last()]" position="after">
+            <t t-if="o and o.partner_id.bank_ids and o.partner_id.bank_ids[0].acc_number">
+                <div class="row mt-4">
+                    <div class="col-12 text-end">
+                        <span>RECIBO domiciliado en la cuenta <span t-field="o.partner_id.bank_ids[0].acc_number"/></span>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

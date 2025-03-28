@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="view_partner_form_inherit_followers" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.followers</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Se añade el campo justo después del campo 'category_id' -->
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="add_as_follower"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

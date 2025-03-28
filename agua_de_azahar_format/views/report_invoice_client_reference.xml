@@ -1,0 +1,19 @@
+<odoo>
+    <!-- Invoice Reference Customization -->
+    <template id="report_invoice_client_reference" inherit_id="account.report_invoice_document">
+        <!-- Target the specific reference field by its name attribute -->
+        <xpath expr="//div[@name='reference']/strong" position="replace">
+            <strong>Referencia Cliente:</strong>
+        </xpath>
+    </template>
+      <!-- Sales Order Reference Customization -->
+      <template id="report_saleorder_client_reference" inherit_id="sale.report_saleorder_document">
+            <!-- Find the actual client reference field in the sale order template -->
+            <xpath expr="//div[@t-if='doc.client_order_ref']" position="replace">
+                <div t-if="doc.client_order_ref" class="col-auto">
+                    <strong>Referencia Cliente:</strong>
+                    <p t-field="doc.client_order_ref"/>
+                </div>
+            </xpath>
+        </template>
+</odoo>
