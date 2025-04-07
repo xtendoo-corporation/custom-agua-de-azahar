@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_invoice_document_quantity" inherit_id="account.report_invoice_document">
+        <!-- Añadir el encabezado de columna -->
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[contains(text(), 'Cantidad') or contains(@name, 'quantity')]" position="after">
+            <th name="th_equiv" class="text-end">Unidades Individuales</th>
+        </xpath>
+
+        <!-- Reemplazar la celda de cantidad y añadir nueva columna -->
+        <xpath expr="//span[@t-field='line.quantity']/ancestor::td[1]" position="replace">
+            <td class="text-end">
+                <span t-field="line.quantity"/>
+                <span t-field="line.product_uom_id" groups="uom.group_uom"/>
+            </td>
+
+            <!-- Nueva columna para unidades individuales -->
+            <td class="text-end">
+                <t t-if="line.product_id and line.product_uom_id">
+                    <span t-esc="line.quantity * line.product_uom_id.factor_inv" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span>uds</span>
+                </t>
+            </td>
+        </xpath>
+
+        <!-- Modificar el encabezado de la columna de precio unitario -->
+        <!-- Modificar el encabezado de la columna de precio unitario -->
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[3]" position="replace">
+            <th name="th_priceunit" class="text-end">Precio por Unidad Individual</th>
+        </xpath>
+
+        <!-- Reemplazar la celda de precio unitario para mostrar el precio por unidad individual -->
+        <xpath expr="//span[@t-field='line.price_unit']/ancestor::td[1]" position="replace">
+            <td class="text-end">
+                <t t-if="line.product_uom_id and line.product_uom_id.factor_inv > 0">
+                    <span t-esc="line.price_unit / line.product_uom_id.factor_inv" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                </t>
+                <t t-else="">
+                    <span t-field="line.price_unit"/>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+    <record id="action_report_invoice_quantity" model="ir.actions.report">
+        <field name="name">Factura con detalle de unidades</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">agua_de_azahar_format.report_invoice_quantity</field>
+        <field name="report_file">agua_de_azahar_format.report_invoice_quantity</field>
+        <field name="print_report_name">'Factura - %s' % object.name</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_invoice_quantity">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="agua_de_azahar_format.report_invoice_document_quantity" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

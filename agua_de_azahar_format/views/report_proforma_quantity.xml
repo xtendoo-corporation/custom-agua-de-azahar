@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Hereda del template de sale.report_saleorder_document para añadir la columna de "Unidades Individuales" -->
+    <template id="report_proforma_document_quantity" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[contains(text(), 'Quantity') or contains(@name, 'th_quantity')]" position="after">
+            <th name="th_equiv" class="text-end">Unidades Individuales</th>
+        </xpath>
+
+        <xpath expr="//td[span[@t-field='line.product_uom_qty']]" position="replace">
+            <td class="text-end">
+                <span t-field="line.product_uom_qty"/>
+                <span t-field="line.product_uom" groups="uom.group_uom"/>
+            </td>
+            <td class="text-end">
+                <t t-if="line.product_id and line.product_uom">
+                    <span t-esc="line.product_uom_qty * line.product_uom.factor_inv" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span>uds</span>
+                </t>
+            </td>
+        </xpath>
+
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[3]" position="replace">
+            <th name="th_priceunit" class="text-end">Ud Individuales</th>
+        </xpath>
+
+        <xpath expr="//td[span[@t-field='line.price_unit']]" position="replace">
+            <td class="text-end">
+                <t t-if="line.product_uom and line.product_uom.factor_inv > 0">
+                    <span t-esc="line.price_unit / line.product_uom.factor_inv" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                </t>
+                <t t-else="">
+                    <span t-field="line.price_unit"/>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+
+    <template id="report_proforma_quantity">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="agua_de_azahar_format.report_proforma_document_quantity" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

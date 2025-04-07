@@ -13,10 +13,15 @@
     'depends': [
         'base',
         'account',
+        'sale',
+        'stock',
     ],
     'data': [
         'views/report_invoice_bankacc.xml',
         'views/report_invoice_client_reference.xml',
+        'views/report_invoice_quantity.xml',
+        'views/report_proforma_quantity.xml',
+        'views/report_stock_quantity.xml',
     ],
     'installable': True,
     'application': False,
