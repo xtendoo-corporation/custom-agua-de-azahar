@@ -1,43 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data inherit_id="stock_picking_report_valued.valued_report_picking" priority="17">
-        <xpath expr="//div[hasclass('page')]" position="before">
-            <t t-set="is_outgoing" t-value="o.picking_type_code == 'outgoing'"/>
-        </xpath>
+    <!-- Plantilla que reemplaza completamente el documento de entrega valorado -->
+    <template id="report_delivery_document_quantity_valued" inherit_id="stock.report_delivery_document" primary="True">
+        <xpath expr="//div[hasclass('page')]" position="replace">
+            <div class="page">
+                <!-- Bloque de depuración visible -->
 
-        <xpath expr="//table[@name='stock_move_line_table']/thead/tr" position="inside">
-            <t t-if="o.valued and o.sale_id and o.move_line_ids and is_outgoing">
-                <th class="text-end"><strong>Unit Price</strong></th>
-                <th class="text-end" groups="product.group_discount_per_so_line">
-                    <strong>Discount</strong>
-                </th>
-                <th class="text-end"><strong>Subtotal</strong></th>
-                <th class="text-end"><strong>Taxes</strong></th>
-                <th class="text-end"><strong>Unidades Individuales</strong></th>
-                <th class="text-end"><strong>Precio por Unidad Individual</strong></th>
-            </t>
-        </xpath>
+                <h2>Albarán: <span t-field="o.name"/></h2>
 
-        <xpath expr="//table[@name='stock_move_line_table']/tbody/tr" position="inside">
-            <td class="text-end">
-                <t t-if="move.product_uom and move.product_uom.factor_inv">
-                    <span t-esc="move.product_uom.factor_inv * move.product_uom_qty" t-options="{'widget': 'float', 'precision': 2}"/>
-                </t>
-                <t t-else="">
-                    <span t-field="move.product_uom_qty"/>
-                </t>
-            </td>
-            <td class="text-end">
-                <t t-if="move.product_uom and move.product_uom.factor_inv > 0">
-                    <span t-esc="move.price_unit / move.product_uom.factor_inv" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
-                </t>
-                <t t-else="">
-                    <span t-field="move.price_unit"/>
-                </t>
-            </td>
-        </xpath>
-    </data>
+                <!-- Información general del albarán -->
+                <div class="row mt5 mb5">
+                    <div class="col-6">
+                        <strong>Número de venta:</strong> <span t-field="o.sale_id.name"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Fecha:</strong> <span t-field="o.date_done" t-options='{"widget": "date"}'/>
+                    </div>
+                </div>
 
+                <!-- Tabla principal de productos -->
+                <table class="table table-sm mt-4" name="stock_move_table">
+                    <thead>
+                        <tr>
+                            <th><strong>Producto</strong></th>
+                            <th class="text-end"><strong>Cantidad</strong></th>
+                            <th class="text-end"><strong>Ud/Caja</strong></th>
+                            <th class="text-end"><strong>Ud Indiv</strong></th>
+                            <th class="text-end" groups="product.group_discount_per_so_line"><strong>Descuento</strong></th>
+                            <th class="text-end"><strong>Impuestos</strong></th>
+                            <th class="text-end"><strong>Subtotal</strong></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.move_ids_without_package" t-as="move">
+                            <tr>
+                                <td>
+                                    <span t-field="move.product_id.display_name"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="move.product_uom_qty"/>
+                                    <span t-field="move.product_uom"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-if="move.product_id.uom_id and move.product_uom and move.product_uom.category_id == move.product_id.uom_id.category_id">
+                                        <span t-esc="int(move.product_uom.factor_inv or 1)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span>1</span>
+                                    </t>
+                                </td>
+                                <td class="text-end">
+                                    <t t-if="move.product_uom and move.product_uom.factor_inv">
+                                        <span t-esc="move.product_uom.factor_inv * move.product_uom_qty" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="move.product_uom_qty"/>
+                                    </t>
+                                </td>
+                                <td class="text-end" groups="product.group_discount_per_so_line">
+                                    <!-- Corregido: usar sale_line_id.discount -->
+                                    <t t-if="move.sale_line_id">
+                                        <span t-field="move.sale_line_id.discount"/>%
+                                    </t>
+                                    <t t-else="">
+                                        0%
+                                    </t>
+                                </td>
+                                <td class="text-end">
+                                    <!-- Corregido: usar sale_line_id.tax_id -->
+                                    <t t-if="move.sale_line_id and move.sale_line_id.tax_id">
+                                        <span t-esc="', '.join(move.sale_line_id.tax_id.mapped('name'))"/>
+                                    </t>
+                                </td>
+                                <td class="text-end">
+                                    <!-- Corregido: calcular el subtotal -->
+                                    <t t-if="move.sale_line_id">
+                                        <span t-field="move.sale_line_id.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="move.price_unit * move.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Totales -->
+                <div class="row justify-content-end" t-if="o.valued and o.sale_id">
+                    <div class="col-4">
+                        <table class="table table-sm">
+                            <tr class="border-black">
+                                <td><strong>Total Sin IVA</strong></td>
+                                <td class="text-end">
+                                    <span t-field="o.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Impuestos</td>
+                                <td class="text-end">
+                                    <span t-field="o.amount_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total</strong></td>
+                                <td class="text-end">
+                                    <span t-field="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Acción del informe -->
     <record id="action_report_delivery_quantity_valued" model="ir.actions.report">
         <field name="name">Albarán valorado con detalle de unidades</field>
         <field name="model">stock.picking</field>
@@ -49,6 +128,7 @@
         <field name="binding_type">report</field>
     </record>
 
+    <!-- Template para mostrar el reporte completo -->
     <template id="report_delivery_quantity_valued">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">

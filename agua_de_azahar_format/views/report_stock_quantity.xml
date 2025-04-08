@@ -43,17 +43,6 @@
         </xpath>
     </template>
 
-    <!-- Acción del informe, asegurando que se usa la plantilla modificada -->
-    <record id="action_report_delivery_quantity" model="ir.actions.report">
-        <field name="name">Albarán con detalle de unidades</field>
-        <field name="model">stock.picking</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">agua_de_azahar_format.report_delivery_quantity</field>
-        <field name="report_file">agua_de_azahar_format.report_delivery_quantity</field>
-        <field name="print_report_name">'Albarán - %s' % object.name</field>
-        <field name="binding_model_id" ref="stock.model_stock_picking"/>
-        <field name="binding_type">report</field>
-    </record>
 
     <!-- Template para mostrar el reporte completo -->
     <template id="report_delivery_quantity">

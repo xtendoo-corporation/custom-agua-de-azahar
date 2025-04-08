@@ -15,6 +15,7 @@
         'account',
         'sale',
         'stock',
+        'stock_picking_report_valued',  # Añadir esta dependencia
     ],
     'data': [
         'views/report_invoice_bankacc.xml',
@@ -22,6 +23,7 @@
         'views/report_invoice_quantity.xml',
         'views/report_proforma_quantity.xml',
         'views/report_stock_quantity.xml',
+        'views/report_stock_quantity_valued.xml',
     ],
     'installable': True,
     'application': False,
